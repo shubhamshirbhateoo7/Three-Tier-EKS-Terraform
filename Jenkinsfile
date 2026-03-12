@@ -7,7 +7,7 @@ pipeline {
     BACKEND_IMAGE     = "${REGISTRY}/hm-backend"
     AWS_REGION        = "ap-south-1"
     CLUSTER_NAME      = "three-tier-cluster"
-    GIT_REPO          = "https://github.com/Abhiram-Rakesh/three-tier-eks-iac.git"
+    GIT_REPO          = "https://github.com/Abhiram-Rakesh/Three-Tier-EKS-Terraform.git"
     SONAR_PROJECT_KEY = "hm-fashion-clone"
     K8S_NAMESPACE     = "hm-shop"
   }
@@ -228,8 +228,9 @@ pipeline {
 
             git commit -m "CI: Update image tags to build-${BUILD_NUMBER} [skip ci]"
 
-            REMOTE_URL="https://${GIT_USER}:${GIT_PASS}@github.com/${GIT_USER}/three-tier-eks-iac.git"
-            git push "\${REMOTE_URL}" HEAD:main
+            REPO_PATH=$(echo "${GIT_REPO}" | sed 's|https://github.com/||')
+            git remote set-url origin "https://${GIT_USER}:${GIT_PASS}@github.com/\${REPO_PATH}"
+            git push origin HEAD:main
 
             echo "Deployment files updated. ArgoCD will sync within 3 minutes."
           """
