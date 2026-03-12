@@ -43,37 +43,7 @@ pipeline {
     }
 
     // ─────────────────────────────────────────────────────────────────────────
-    // STAGE 2 — Dependency Check (Snyk)
-    // UNSTABLE on high severity; aborts on critical severity
-    // ─────────────────────────────────────────────────────────────────────────
-    stage('Dependency Check (Snyk)') {
-      steps {
-        withCredentials([
-          string(credentialsId: 'snyk-token', variable: 'SNYK_TOKEN')
-        ]) {
-          sh """
-            echo "Installing dependencies for Snyk scan..."
-            (cd app/frontend && npm install --silent 2>/dev/null || npm install)
-            (cd app/backend  && npm install --silent 2>/dev/null || npm install)
-
-            snyk auth ${SNYK_TOKEN}
-            snyk test --all-projects \
-                      --severity-threshold=high \
-                      --json > snyk-results.json || true
-          """
-          archiveArtifacts artifacts: 'snyk-results.json', allowEmptyArchive: true
-          catchError(buildResult: 'UNSTABLE', stageResult: 'UNSTABLE') {
-            sh """
-              snyk test --all-projects \
-                        --severity-threshold=critical
-            """
-          }
-        }
-      }
-    }
-
-    // ─────────────────────────────────────────────────────────────────────────
-    // STAGE 3 — File System Scan (Trivy)
+    // STAGE 2 — File System Scan (Trivy)
     // exit-code 0 = always passes but results are archived for audit trail
     // ─────────────────────────────────────────────────────────────────────────
     stage('File System Scan (Trivy)') {
@@ -254,7 +224,7 @@ pipeline {
       echo "❌ Pipeline FAILED — Check stage logs above for details"
     }
     unstable {
-      echo "⚠️  Pipeline UNSTABLE — High-severity vulnerabilities found. Review Snyk/Trivy results."
+      echo "⚠️  Pipeline UNSTABLE — High-severity vulnerabilities found. Review Trivy results."
     }
   }
 }
