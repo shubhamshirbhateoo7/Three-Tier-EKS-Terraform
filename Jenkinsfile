@@ -2,12 +2,12 @@ pipeline {
   agent any
 
   environment {
-    REGISTRY          = "567776770107.dkr.ecr.ap-south-1.amazonaws.com"
+    REGISTRY          = "<YOUR_AWS_ACCOUNT_ID>.dkr.ecr.ap-south-1.amazonaws.com"
     FRONTEND_IMAGE    = "${REGISTRY}/hm-frontend"
     BACKEND_IMAGE     = "${REGISTRY}/hm-backend"
     AWS_REGION        = "ap-south-1"
     CLUSTER_NAME      = "three-tier-cluster"
-    GIT_REPO          = "https://github.com/Abhiram-Rakesh/Three-Tier-EKS-Terraform.git"
+    GIT_REPO          = "https://github.com/<YOUR_GITHUB_USERNAME>/<YOUR_REPO_NAME>.git"
     SONAR_PROJECT_KEY = "hm-fashion-clone"
     K8S_NAMESPACE     = "hm-shop"
   }
@@ -216,11 +216,11 @@ pipeline {
             git config user.name  "Jenkins CI"
 
             echo "Updating frontend deployment image tag to build ${BUILD_NUMBER}..."
-            sed -i "s|image: ${FRONTEND_IMAGE}:.*|image: ${FRONTEND_IMAGE}:${BUILD_NUMBER}|g" \
+            sed -i "s|${FRONTEND_IMAGE}:.*|${FRONTEND_IMAGE}:${BUILD_NUMBER}|g" \
               k8s_manifests/frontend/deployment.yaml
 
             echo "Updating backend deployment image tag to build ${BUILD_NUMBER}..."
-            sed -i "s|image: ${BACKEND_IMAGE}:.*|image: ${BACKEND_IMAGE}:${BUILD_NUMBER}|g" \
+            sed -i "s|${BACKEND_IMAGE}:.*|${BACKEND_IMAGE}:${BUILD_NUMBER}|g" \
               k8s_manifests/backend/deployment.yaml
 
             git add k8s_manifests/frontend/deployment.yaml \
