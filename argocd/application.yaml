@@ -8,7 +8,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL:        https://github.com/<YOUR_USERNAME>/three-tier-eks-iac.git
+    repoURL:        https://github.com/Abhiram-Rakesh/three-tier-eks-iac.git
     targetRevision: main
     path:           k8s_manifests
   destination:
