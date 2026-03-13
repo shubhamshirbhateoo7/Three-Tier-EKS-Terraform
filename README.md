@@ -1,20 +1,8 @@
 # H&M Fashion Clone — DevSecOps on AWS EKS
 
-![AWS](https://img.shields.io/badge/AWS-EKS-orange) ![Jenkins](https://img.shields.io/badge/CI-Jenkins-blue) ![ArgoCD](https://img.shields.io/badge/CD-ArgoCD-green) ![Terraform](https://img.shields.io/badge/IaC-Terraform-purple) ![Prometheus](https://img.shields.io/badge/Monitoring-Prometheus-red)
 
-A production-grade, three-tier fashion e-commerce application deployed on AWS EKS with a full DevSecOps pipeline — security scanning, GitOps delivery, autoscaling, and observability — all in the Mumbai (ap-south-1) region.
+A production-grade, three-tier fashion e-commerce application deployed on AWS EKS with a full DevSecOps pipeline — security scanning, GitOps delivery, autoscaling, and observability
 
----
-
-## ⚠️ Cost Warning
-
-| Duration | Mumbai (ap-south-1) Est. |
-|----------|--------------------------|
-| 1 hour   | ~$0.48                   |
-| 1 day    | ~$11.52                  |
-| 1 month  | ~$346                    |
-
-> **Always tear down resources when you are finished.** NAT Gateways and EKS nodes accrue charges even when idle. See the [Teardown](#teardown) section.
 
 ---
 
@@ -121,7 +109,7 @@ aws configure
 # Default output format [None]: json
 ```
 
-✅ **Verify:** `aws sts get-caller-identity` returns your Account ID and ARN.
+- **Verify:** `aws sts get-caller-identity` returns your Account ID and ARN.
 
 ---
 
@@ -142,7 +130,7 @@ terraform --version
 # Expected: Terraform v1.5.x or higher
 ```
 
-✅ **Verify:** `terraform --version` shows 1.5+.
+- **Verify:** `terraform --version` shows 1.5+.
 
 ---
 
@@ -158,7 +146,7 @@ kubectl version --client
 # Expected: Client Version: v1.29.x
 ```
 
-✅ **Verify:** `kubectl version --client` shows a version number.
+- **Verify:** `kubectl version --client` shows a version number.
 
 ---
 
@@ -172,7 +160,7 @@ helm version
 # Expected: version.BuildInfo{Version:"v3.x.x", ...}
 ```
 
-✅ **Verify:** `helm version` shows v3.x.
+- **Verify:** `helm version` shows v3.x.
 
 ---
 
@@ -189,7 +177,7 @@ docker --version
 # Expected: Docker version 24.x.x, build ...
 ```
 
-✅ **Verify:** `docker run hello-world` completes without permission errors.
+- **Verify:** `docker run hello-world` completes without permission errors.
 
 ---
 
@@ -219,7 +207,7 @@ aws ec2 create-key-pair \
 chmod 400 hm-eks-key.pem
 ```
 
-✅ **Verify:** `ls -la hm-eks-key.pem` shows `-r--------` permissions.
+- **Verify:** `ls -la hm-eks-key.pem` shows `-r--------` permissions.
 
 ---
 
@@ -228,7 +216,7 @@ chmod 400 hm-eks-key.pem
 Fork or clone this repository under your own GitHub account:
 
 ```bash
-git clone https://github.com/<YOUR_USERNAME>/Three-Tier-EKS-Terraform.git
+git clone https://github.com/Abhiram-Rakesh/Three-Tier-EKS-Terraform.git
 cd Three-Tier-EKS-Terraform
 ```
 
@@ -236,7 +224,7 @@ Or if creating fresh:
 
 ```bash
 git init
-git remote add origin https://github.com/<YOUR_USERNAME>/Three-Tier-EKS-Terraform.git
+git remote add origin https://github.com/Abhiram-Rakesh/Three-Tier-EKS-Terraform.git
 git add . && git commit -m "Initial commit"
 git push -u origin main
 ```
@@ -245,7 +233,7 @@ git push -u origin main
 
 ### AWS IAM Requirements
 
-Your IAM user/role needs the following policies attached:
+Your IAM user/role needs the following policies attached for terraform to create the infra:
 
 | Policy | Why It's Needed |
 |--------|----------------|
@@ -265,7 +253,7 @@ Your IAM user/role needs the following policies attached:
 ### Step 1 — Clone the Repository
 
 ```bash
-git clone https://github.com/<YOUR_USERNAME>/Three-Tier-EKS-Terraform.git
+git clone https://github.com/Abhiram-Rakesh/Three-Tier-EKS-Terraform.git
 cd Three-Tier-EKS-Terraform
 ```
 
@@ -276,7 +264,7 @@ remote: Enumerating objects: 87, done.
 Receiving objects: 100% (87/87), done.
 ```
 
-✅ **Success indicator:** `ls` shows Jenkinsfile, terraform/, k8s_manifests/, app/
+- **Success indicator:** `ls` shows Jenkinsfile, terraform/, k8s_manifests/, app/
 
 ---
 
@@ -316,7 +304,7 @@ export JENKINS_IP=$(terraform output -raw jenkins_public_ip)
 cd ..
 ```
 
-✅ **Success indicator:** `aws eks list-clusters --region ap-south-1` shows `three-tier-cluster`.
+- **Success indicator:** `aws eks list-clusters --region ap-south-1` shows `three-tier-cluster`.
 
 ---
 
@@ -337,7 +325,7 @@ ip-10-0-10-xx.ap-south-1.compute.internal  Ready    <none>   2m    v1.29.x
 ip-10-0-11-xx.ap-south-1.compute.internal  Ready    <none>   2m    v1.29.x
 ```
 
-✅ **Success indicator:** Both nodes show `STATUS=Ready`.
+- **Success indicator:** Both nodes show `STATUS=Ready`.
 
 ---
 
@@ -378,7 +366,7 @@ ebs-csi-node-xxxxx                   3/3   Running   0   2m
 ebs-csi-node-xxxxx                   3/3   Running   0   2m
 ```
 
-✅ **Success indicator:** `ACTIVE` status and controller pod in `Running` state.
+- **Success indicator:** `ACTIVE` status and controller pod in `Running` state.
 
 ---
 
@@ -401,7 +389,7 @@ NAME   CONTROLLER                  PARAMETERS   AGE
 alb    ingress.k8s.aws/alb         <none>        5s
 ```
 
-✅ **Success indicator:** `hm-ebs-gp2` StorageClass and `alb` IngressClass appear.
+- **Success indicator:** `hm-ebs-gp2` StorageClass and `alb` IngressClass appear.
 
 ---
 
@@ -446,7 +434,7 @@ NAME                           READY   UP-TO-DATE   AVAILABLE   AGE
 aws-load-balancer-controller   2/2     2            2           60s
 ```
 
-✅ **Success indicator:** Deployment shows `2/2 READY`.
+- **Success indicator:** Deployment shows `2/2 READY`.
 
 ---
 
@@ -468,7 +456,7 @@ helm upgrade --install cluster-autoscaler autoscaler/cluster-autoscaler \
 kubectl get deployment -n kube-system cluster-autoscaler
 ```
 
-✅ **Success indicator:** `cluster-autoscaler` deployment shows `1/1 READY`.
+- **Success indicator:** `cluster-autoscaler` deployment shows `1/1 READY`.
 
 ---
 
@@ -490,7 +478,7 @@ ip-10-0-10-xx.ap-south-1.compute.internal  120m         6%     820Mi           2
 ip-10-0-11-xx.ap-south-1.compute.internal  115m         5%     790Mi           26%
 ```
 
-✅ **Success indicator:** `kubectl top nodes` shows CPU% and MEMORY% values (not errors).
+- **Success indicator:** `kubectl top nodes` shows CPU% and MEMORY% values (not errors).
 
 ---
 
@@ -519,7 +507,7 @@ git commit -m "CI: Inject AWS Account ID ${AWS_ACCOUNT_ID} into manifests"
 git push origin main
 ```
 
-✅ **Success indicator:** `grep '<YOUR_AWS_ACCOUNT_ID>' k8s_manifests/**/*.yaml` returns no output.
+- **Success indicator:** `grep '<YOUR_AWS_ACCOUNT_ID>' k8s_manifests/**/*.yaml` returns no output.
 
 ---
 
@@ -574,7 +562,7 @@ Credentials:
 
 **What ArgoCD does automatically after this:** It polls the `k8s_manifests/` path in your GitHub repo every 3 minutes. When Jenkins pushes an updated image tag (Stage 7), ArgoCD detects the commit and applies the new manifests to the cluster — completing the GitOps loop.
 
-✅ **Success indicator:** ArgoCD UI shows `hm-shop` application with status `Synced` and `Healthy`.
+- **Success indicator:** ArgoCD UI shows `hm-shop` application with status `Synced` and `Healthy`.
 
 ---
 
@@ -620,7 +608,7 @@ NAME              CLASS   HOSTS   ADDRESS                                       
 hm-shop-ingress   alb     *       k8s-hmshop-xxxx.ap-south-1.elb.amazonaws.com   80      5m
 ```
 
-✅ **Success indicator:** All pods `Running`, HPAs show real percentages (not `<unknown>`), ingress `ADDRESS` field is populated.
+- **Success indicator:** All pods `Running`, HPAs show real percentages (not `<unknown>`), ingress `ADDRESS` field is populated.
 
 ---
 
@@ -751,7 +739,7 @@ sudo cat /var/lib/jenkins/secrets/initialAdminPassword
 4. Create admin user: fill in username, password, full name, email
 5. Click **Save and Finish** → **Start using Jenkins**
 
-✅ **Success indicator:** Jenkins dashboard loads showing "Welcome to Jenkins!"
+- **Success indicator:** Jenkins dashboard loads showing "Welcome to Jenkins!"
 
 ---
 
@@ -807,7 +795,7 @@ Search for and install each:
 
 Click **Install** and wait for Jenkins to restart. The `sonar` plugin must be installed before the SonarQube server can be configured in the next step.
 
-✅ **Success indicator:** Jenkins restarts and all 14 plugins show as **Installed**.
+- **Success indicator:** Jenkins restarts and all 14 plugins show as **Installed**.
 
 **Add token to Jenkins:**
 1. Jenkins → **Manage Jenkins** → **Configure System**
@@ -830,7 +818,7 @@ This is required for the `waitForQualityGate()` step in the Jenkinsfile to work.
 
 > The trailing slash in the URL (`/sonarqube-webhook/`) is required. SonarQube will POST the analysis result to this endpoint, which unblocks the Jenkins pipeline quality gate check.
 
-✅ **Success indicator:** Jenkins can reach SonarQube — test via a pipeline run. The pipeline should proceed past Stage 1 without hanging.
+- **Success indicator:** Jenkins can reach SonarQube — test via a pipeline run. The pipeline should proceed past Stage 1 without hanging.
 
 ---
 
@@ -840,12 +828,12 @@ Navigate to: **Jenkins → Manage Jenkins → Credentials → System → Global 
 
 | ID | Kind | Value | Security Note |
 |----|------|-------|---------------|
-| `aws-access-key` | Secret text | AWS Access Key ID for `jenkins-ci` IAM user | Never use personal admin keys |
-| `aws-secret-key` | Secret text | AWS Secret Access Key for `jenkins-ci` | Rotate every 90 days |
+| `aws-access-key` | Secret text | AWS Access Key ID for the IAM user | Never use personal admin keys |
+| `aws-secret-key` | Secret text | AWS Secret Access Key for the IAM user | Rotate every 90 days |
 | `sonar-token` | Secret text | SonarQube user token from Step 13 | Regenerate if compromised |
 | `git-credentials` | Username/Password | GitHub username + PAT | PAT needs `repo` + `admin:repo_hook` scopes |
 
-**`jenkins-ci` IAM user — required policy:**
+** IAM user — required policy:**
 
 Attach a single AWS managed policy to this user — do **not** use inline policies:
 
@@ -855,7 +843,7 @@ Attach a single AWS managed policy to this user — do **not** use inline polici
 
 This grants `ecr:GetAuthorizationToken` plus push/pull to all repos, and intentionally excludes destructive actions like deleting repos or lifecycle policies. EKS/kubectl access is handled by the Jenkins EC2 instance profile — this user is only used for ECR.
 
-✅ **Success indicator:** All 4 credentials appear in the global credentials list.
+- **Success indicator:** All 4 credentials appear in the global credentials list.
 
 ---
 
@@ -874,13 +862,13 @@ This grants `ecr:GetAuthorizationToken` plus push/pull to all repos, and intenti
    - Script Path: `Jenkinsfile`
 6. Click **Save**
 
-✅ **Success indicator:** Pipeline job appears in Jenkins dashboard.
+- **Success indicator:** Pipeline job appears in Jenkins dashboard.
 
 ---
 
 ### Step 16 — Configure GitHub Webhook
 
-1. Go to: `https://github.com/<YOUR_USERNAME>/Three-Tier-EKS-Terraform/settings/hooks/new`
+1. Go to: `https://github.com/Abhiram-Rakesh/Three-Tier-EKS-Terraform/settings/hooks/new`
 2. Fill in:
    - **Payload URL:** `http://<JENKINS_IP>:8080/github-webhook/`
    - **Content type:** `application/json`
@@ -888,7 +876,7 @@ This grants `ecr:GetAuthorizationToken` plus push/pull to all repos, and intenti
 3. Click **Add webhook**
 4. GitHub will send a ping — look for a green ✓ checkmark on the webhook page
 
-✅ **Success indicator:** Green checkmark on GitHub webhook page, and Jenkins shows a build was triggered.
+- **Success indicator:** Green checkmark on GitHub webhook page, and Jenkins shows a build was triggered.
 
 ---
 
@@ -912,7 +900,7 @@ Watch the pipeline in Jenkins at `http://<JENKINS_IP>:8080/job/hm-fashion-pipeli
 
 After Stage 6, ArgoCD detects the new commit within 3 minutes and deploys the updated images automatically.
 
-✅ **Success indicator:** All 6 stages green, ArgoCD application status shows `Synced`.
+- **Success indicator:** All 6 stages green, ArgoCD application status shows `Synced`.
 
 ---
 
@@ -1221,8 +1209,8 @@ kubectl patch application hm-shop -n argocd \
 
 **Fix:**
 ```bash
-# Verify the jenkins-ci IAM user has ECR permissions
-aws iam list-attached-user-policies --user-name jenkins-ci
+# Verify the IAM user has ECR permissions
+aws iam list-attached-user-policies --user-name <IAM-USER-NAME>
 # Should include: AmazonEC2ContainerRegistryPowerUser
 
 # Test ECR login manually on Jenkins EC2
