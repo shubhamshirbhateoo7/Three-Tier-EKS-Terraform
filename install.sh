@@ -366,14 +366,17 @@ java -version
 
 echo "=== Installing Jenkins ==="
 if ! command -v jenkins &>/dev/null; then
-  # Clean up any stale keyring/sources files from previous failed attempts
-  sudo rm -f /usr/share/keyrings/jenkins-keyring.asc /usr/share/keyrings/jenkins-keyring.gpg
-  sudo rm -f /etc/apt/sources.list.d/jenkins.list
-  # Download ASCII-armored key directly — apt reads .asc natively, no gpg needed
-  sudo wget -qO /usr/share/keyrings/jenkins-keyring.asc \
-    https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
-  sudo chmod 644 /usr/share/keyrings/jenkins-keyring.asc
-  echo "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/" \
+  # Clean up ALL previous attempts (keyring files + sources list)
+  sudo rm -f /usr/share/keyrings/jenkins-keyring.asc \
+             /usr/share/keyrings/jenkins-keyring.gpg \
+             /etc/apt/trusted.gpg.d/jenkins.asc \
+             /etc/apt/trusted.gpg.d/jenkins.gpg \
+             /etc/apt/sources.list.d/jenkins.list
+  # Put key in trusted.gpg.d — apt auto-trusts all keys here, no signed-by needed
+  curl -fsSL https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key \
+    | sudo tee /etc/apt/trusted.gpg.d/jenkins.asc > /dev/null
+  sudo chmod 644 /etc/apt/trusted.gpg.d/jenkins.asc
+  echo "deb https://pkg.jenkins.io/debian-stable binary/" \
     | sudo tee /etc/apt/sources.list.d/jenkins.list > /dev/null
   sudo apt-get update -qq
   sudo apt-get install -y jenkins
@@ -423,13 +426,17 @@ sonar-scanner --version
 
 echo "=== Installing Trivy ==="
 if ! command -v trivy &>/dev/null; then
-  # Clean up any stale keyring/sources files from previous failed attempts
-  sudo rm -f /usr/share/keyrings/trivy.asc /usr/share/keyrings/trivy.gpg
-  sudo rm -f /etc/apt/sources.list.d/trivy.list
-  sudo wget -qO /usr/share/keyrings/trivy.asc \
-    https://aquasecurity.github.io/trivy-repo/deb/public.key
-  sudo chmod 644 /usr/share/keyrings/trivy.asc
-  echo "deb [signed-by=/usr/share/keyrings/trivy.asc] https://aquasecurity.github.io/trivy-repo/deb generic main" \
+  # Clean up ALL previous attempts
+  sudo rm -f /usr/share/keyrings/trivy.asc \
+             /usr/share/keyrings/trivy.gpg \
+             /etc/apt/trusted.gpg.d/trivy.asc \
+             /etc/apt/trusted.gpg.d/trivy.gpg \
+             /etc/apt/sources.list.d/trivy.list
+  # Put key in trusted.gpg.d — apt auto-trusts all keys here, no signed-by needed
+  curl -fsSL https://aquasecurity.github.io/trivy-repo/deb/public.key \
+    | sudo tee /etc/apt/trusted.gpg.d/trivy.asc > /dev/null
+  sudo chmod 644 /etc/apt/trusted.gpg.d/trivy.asc
+  echo "deb https://aquasecurity.github.io/trivy-repo/deb generic main" \
     | sudo tee /etc/apt/sources.list.d/trivy.list > /dev/null
   sudo apt-get update -qq
   sudo apt-get install -y trivy
