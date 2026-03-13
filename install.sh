@@ -295,6 +295,8 @@ phase_controllers() {
     --wait --timeout=300s
   success "AWS Load Balancer Controller installed"
   kubectl get deployment -n kube-system aws-load-balancer-controller
+  info "Waiting for ALB controller to be fully ready..."
+  kubectl rollout status deployment/aws-load-balancer-controller -n kube-system --timeout=120s
 
   local CA_ROLE_ARN
   CA_ROLE_ARN=$(cd "${TERRAFORM_DIR}" && terraform output -raw cluster_autoscaler_role_arn 2>/dev/null || \
@@ -467,8 +469,13 @@ phase_argocd() {
   info "Creating ArgoCD namespace..."
   kubectl create namespace "${ARGOCD_NAMESPACE}" --dry-run=client -o yaml | kubectl apply -f -
 
+  info "Removing stale ALB webhook configs to prevent TLS errors during ArgoCD install..."
+  kubectl delete mutatingwebhookconfiguration aws-load-balancer-webhook 2>/dev/null || true
+  kubectl delete validatingwebhookconfiguration aws-load-balancer-webhook 2>/dev/null || true
+
   info "Installing ArgoCD..."
-  kubectl apply -n "${ARGOCD_NAMESPACE}" \
+  # --server-side avoids 'annotation too long' error on ArgoCD CRDs
+  kubectl apply --server-side -n "${ARGOCD_NAMESPACE}" \
     -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 
   info "Waiting for ArgoCD server to be Available (up to 3 minutes)..."
