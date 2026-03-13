@@ -25,7 +25,7 @@ spec:
       serviceAccountName: frontend-sa
       containers:
         - name: frontend
-          image: 567776770107.dkr.ecr.ap-south-1.amazonaws.com/hm-frontend:2
+          image: 567776770107.dkr.ecr.ap-south-1.amazonaws.com/hm-frontend:3
           ports:
             - containerPort: 8080
           resources:
