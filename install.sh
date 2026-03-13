@@ -396,6 +396,7 @@ docker --version
 
 echo "=== Installing AWS CLI v2 ==="
 if ! command -v aws &>/dev/null; then
+  sudo apt-get install -y unzip
   curl -fsSL "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o /tmp/awscliv2.zip
   unzip -q /tmp/awscliv2.zip -d /tmp
   sudo /tmp/aws/install
