@@ -20,24 +20,19 @@ pipeline {
     // ─────────────────────────────────────────────────────────────────────────
     stage('Code Quality Analysis (SonarQube)') {
       steps {
-        withCredentials([
-          string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')
-        ]) {
-          withSonarQubeEnv('SonarQube') {
-            sh """
-              sonar-scanner \
-                -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
-                -Dsonar.projectName="H&M Fashion Clone" \
-                -Dsonar.projectVersion=1.0 \
-                -Dsonar.sources=app/frontend/src,app/backend \
-                -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info \
-                -Dsonar.exclusions=**/node_modules/**,**/build/**,**/*.test.js \
-                -Dsonar.login=${env.SONAR_TOKEN}
-            """
-          }
-          timeout(time: 2, unit: 'MINUTES') {
-            waitForQualityGate abortPipeline: true
-          }
+        withSonarQubeEnv('SonarQube') {
+          sh """
+            sonar-scanner \
+              -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
+              -Dsonar.projectName="H&M Fashion Clone" \
+              -Dsonar.projectVersion=1.0 \
+              -Dsonar.sources=app/frontend/src,app/backend \
+              -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info \
+              -Dsonar.exclusions=**/node_modules/**,**/build/**,**/*.test.js
+          """
+        }
+        timeout(time: 2, unit: 'MINUTES') {
+          waitForQualityGate abortPipeline: true
         }
       }
     }
