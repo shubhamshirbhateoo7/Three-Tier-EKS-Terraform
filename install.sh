@@ -372,12 +372,8 @@ if ! command -v jenkins &>/dev/null; then
              /etc/apt/trusted.gpg.d/jenkins.asc \
              /etc/apt/trusted.gpg.d/jenkins.gpg \
              /etc/apt/sources.list.d/jenkins.list
-  # gpg --dearmor runs as ubuntu user (no sudo = no TTY issue)
-  # sudo tee writes binary .gpg to privileged dir (definitely read by apt)
-  curl -fsSL https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key \
-    | gpg --dearmor \
-    | sudo tee /etc/apt/trusted.gpg.d/jenkins.gpg > /dev/null
-  sudo chmod 644 /etc/apt/trusted.gpg.d/jenkins.gpg
+  # Fetch key by ID directly from Ubuntu keyserver — no file/format/permission issues
+  sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 7198F4B714ABFC68
   echo "deb https://pkg.jenkins.io/debian-stable binary/" \
     | sudo tee /etc/apt/sources.list.d/jenkins.list > /dev/null
   sudo apt-get update -qq
@@ -434,10 +430,7 @@ if ! command -v trivy &>/dev/null; then
              /etc/apt/trusted.gpg.d/trivy.asc \
              /etc/apt/trusted.gpg.d/trivy.gpg \
              /etc/apt/sources.list.d/trivy.list
-  curl -fsSL https://aquasecurity.github.io/trivy-repo/deb/public.key \
-    | gpg --dearmor \
-    | sudo tee /etc/apt/trusted.gpg.d/trivy.gpg > /dev/null
-  sudo chmod 644 /etc/apt/trusted.gpg.d/trivy.gpg
+  curl -fsSL https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
   echo "deb https://aquasecurity.github.io/trivy-repo/deb generic main" \
     | sudo tee /etc/apt/sources.list.d/trivy.list > /dev/null
   sudo apt-get update -qq
