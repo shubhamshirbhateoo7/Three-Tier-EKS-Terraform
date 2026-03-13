@@ -52,21 +52,21 @@ data:
     CREATE INDEX IF NOT EXISTS idx_products_category ON products(category);
     CREATE INDEX IF NOT EXISTS idx_orders_user_id    ON orders(user_id);
 
-    INSERT INTO products (name, description, price, original_price, category)
+    INSERT INTO products (name, description, price, original_price, category, image_url)
     VALUES
-      ('Slim Fit Cotton T-Shirt','Classic crew-neck tee in 100% organic cotton.',599,799,'tops'),
-      ('Floral Wrap Dress','Lightweight viscose wrap dress with floral print.',1499,1999,'dresses'),
-      ('Slim Fit Chinos','Stretch chino in slim fit.',1299,1699,'pants'),
-      ('Oversized Denim Jacket','Classic denim jacket with raw-edge hem.',2499,2999,'jackets'),
-      ('Canvas Sneakers','Casual lace-up sneakers in canvas.',1199,NULL,'shoes'),
-      ('Leather Tote Bag','Spacious faux-leather tote with zip closure.',1799,2299,'bags'),
-      ('Striped Linen Shirt','Relaxed-fit linen shirt.',1099,1399,'tops'),
-      ('High-Waist Wide-Leg Trousers','Wide-leg trousers in woven fabric.',1599,1999,'pants'),
-      ('Cable-Knit Sweater','Soft cable-knit sweater.',1899,2499,'tops'),
-      ('Pleated Midi Skirt','Flowy pleated midi skirt.',999,1299,'dresses'),
-      ('Puffer Jacket','Lightweight quilted puffer jacket.',2999,3999,'jackets'),
-      ('Slip-On Loafers','Classic slip-on loafers in faux suede.',1399,NULL,'shoes'),
-      ('Ribbed Bodycon Dress','Stretchy ribbed-knit bodycon dress.',1199,1499,'dresses'),
-      ('Cargo Shorts','Relaxed cargo shorts.',899,1199,'pants'),
-      ('Crossbody Bag','Compact crossbody bag with adjustable strap.',1299,1699,'bags')
+      ('Slim Fit Cotton T-Shirt','Classic crew-neck tee in 100% organic cotton.',599,799,'tops','https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600&h=750&fit=crop'),
+      ('Floral Wrap Dress','Lightweight viscose wrap dress with floral print.',1499,1999,'dresses','https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=600&h=750&fit=crop'),
+      ('Slim Fit Chinos','Stretch chino in slim fit.',1299,1699,'pants','https://images.unsplash.com/photo-1473966968600-fa801b869a1a?w=600&h=750&fit=crop'),
+      ('Oversized Denim Jacket','Classic denim jacket with raw-edge hem.',2499,2999,'jackets','https://images.unsplash.com/photo-1542574621-e088a4464792?w=600&h=750&fit=crop'),
+      ('Canvas Sneakers','Casual lace-up sneakers in canvas.',1199,NULL,'shoes','https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&h=750&fit=crop'),
+      ('Leather Tote Bag','Spacious faux-leather tote with zip closure.',1799,2299,'bags','https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&h=750&fit=crop'),
+      ('Striped Linen Shirt','Relaxed-fit linen shirt.',1099,1399,'tops','https://images.unsplash.com/photo-1598033129183-c4f50c736f10?w=600&h=750&fit=crop'),
+      ('High-Waist Wide-Leg Trousers','Wide-leg trousers in woven fabric.',1599,1999,'pants','https://images.unsplash.com/photo-1594938374182-a57e28b65fb3?w=600&h=750&fit=crop'),
+      ('Cable-Knit Sweater','Soft cable-knit sweater.',1899,2499,'tops','https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=600&h=750&fit=crop'),
+      ('Pleated Midi Skirt','Flowy pleated midi skirt.',999,1299,'dresses','https://images.unsplash.com/photo-1583496661160-fb5974ca58f8?w=600&h=750&fit=crop'),
+      ('Puffer Jacket','Lightweight quilted puffer jacket.',2999,3999,'jackets','https://images.unsplash.com/photo-1539533113208-f6df8cc8b543?w=600&h=750&fit=crop'),
+      ('Slip-On Loafers','Classic slip-on loafers in faux suede.',1399,NULL,'shoes','https://images.unsplash.com/photo-1600185365778-6a9c0c498f53?w=600&h=750&fit=crop'),
+      ('Ribbed Bodycon Dress','Stretchy ribbed-knit bodycon dress.',1199,1499,'dresses','https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=600&h=750&fit=crop'),
+      ('Cargo Shorts','Relaxed cargo shorts.',899,1199,'pants','https://images.unsplash.com/photo-1591195853828-11db59a44f43?w=600&h=750&fit=crop'),
+      ('Crossbody Bag','Compact crossbody bag with adjustable strap.',1299,1699,'bags','https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=600&h=750&fit=crop')
     ON CONFLICT DO NOTHING;
