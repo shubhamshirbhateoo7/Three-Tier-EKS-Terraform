@@ -968,7 +968,7 @@ SELECT * FROM orders LIMIT 5;
 ### Manual Teardown (Order Matters!)
 
 ```bash
-# 1. Uninstall Helm releases FIRST (releases cloud resources)
+# 1. Uninstall Helm releases FIRST (triggers controller-managed LB deletion)
 helm uninstall grafana              -n monitoring
 helm uninstall prometheus           -n monitoring
 helm uninstall cluster-autoscaler   -n kube-system
@@ -977,32 +977,49 @@ helm uninstall aws-load-balancer-controller -n kube-system
 # 2. Delete namespaces (triggers ALB + EBS cleanup)
 kubectl delete namespace hm-shop argocd monitoring --timeout=120s
 
-# 3. Wait for ALBs/NLBs to be deleted and ENIs to detach
-# Kubernetes-managed LBs create ENIs in the VPC subnets.
-# Terraform cannot delete the VPC while those ENIs still exist.
-echo "Waiting for load balancer ENIs to be released (60s)..."
-sleep 60
+# 3. Explicitly delete all ALBs and NLBs in the VPC via AWS CLI
+# Kubernetes controllers sometimes leave LBs behind after namespace deletion.
+# Terraform cannot delete the VPC while any LB ENIs still exist in subnets.
+VPC_ID=$(aws ec2 describe-vpcs --region ap-south-1 --filters "Name=tag:Name,Values=hm-shop-vpc" --query "Vpcs[0].VpcId" --output text)
+echo "VPC: ${VPC_ID}"
 
-# 4. Verify no leftover ENIs remain in the VPC before destroying
-VPC_ID=$(cd terraform && terraform output -raw vpc_id 2>/dev/null || aws ec2 describe-vpcs --region ap-south-1 --filters "Name=tag:Name,Values=hm-shop-vpc" --query "Vpcs[0].VpcId" --output text)
-
-LEFTOVER_ENIS=$(aws ec2 describe-network-interfaces --region ap-south-1 --filters "Name=vpc-id,Values=${VPC_ID}" "Name=status,Values=available,in-use" --query "NetworkInterfaces[?Attachment.InstanceId==null].NetworkInterfaceId" --output text)
-
-if [ -n "$LEFTOVER_ENIS" ]; then
-  echo "Found leftover ENIs — deleting: $LEFTOVER_ENIS"
-  for ENI in $LEFTOVER_ENIS; do
-    aws ec2 delete-network-interface --region ap-south-1 --network-interface-id $ENI && echo "Deleted $ENI"
+LB_ARNS=$(aws elbv2 describe-load-balancers --region ap-south-1 --query "LoadBalancers[?VpcId=='${VPC_ID}'].LoadBalancerArn" --output text)
+if [ -n "$LB_ARNS" ]; then
+  for ARN in $LB_ARNS; do
+    echo "Deleting LB: $ARN"
+    aws elbv2 delete-load-balancer --region ap-south-1 --load-balancer-arn $ARN
   done
+  echo "Waiting 60s for LBs to finish deleting..."
+  sleep 60
 else
-  echo "No leftover ENIs — safe to destroy."
+  echo "No load balancers found in VPC."
 fi
 
-# 5. Terraform destroy
+# 4. Delete any leftover Target Groups (LBs must be gone first)
+TG_ARNS=$(aws elbv2 describe-target-groups --region ap-south-1 --query "TargetGroups[*].TargetGroupArn" --output text)
+if [ -n "$TG_ARNS" ]; then
+  for TG in $TG_ARNS; do
+    aws elbv2 delete-target-group --region ap-south-1 --target-group-arn $TG 2>/dev/null && echo "Deleted TG: $TG"
+  done
+fi
+
+# 5. Delete any remaining ENIs in the VPC (LBs leave ENIs behind on deletion)
+ENI_IDS=$(aws ec2 describe-network-interfaces --region ap-south-1 --filters "Name=vpc-id,Values=${VPC_ID}" --query "NetworkInterfaces[*].NetworkInterfaceId" --output text)
+if [ -n "$ENI_IDS" ]; then
+  for ENI in $ENI_IDS; do
+    echo "Deleting ENI: $ENI"
+    aws ec2 delete-network-interface --region ap-south-1 --network-interface-id $ENI 2>/dev/null || echo "  Skipped $ENI (still in use or already gone)"
+  done
+else
+  echo "No leftover ENIs found."
+fi
+
+# 6. Terraform destroy
 cd terraform
 terraform destroy -auto-approve
 ```
 
-> **Why order matters:** Terraform cannot delete the VPC while ALBs, NLBs, or their ENIs are still attached to subnets. The ALB Controller and Grafana NLB each create ENIs that outlive the Kubernetes objects if not given enough time to clean up. Steps 3–4 ensure all ENIs are gone before Terraform attempts VPC deletion.
+> **Why order matters:** Terraform cannot delete the VPC while any ENIs remain in its subnets. ALBs (hm-shop ingress) and NLBs (ArgoCD, Grafana) all create ENIs. Steps 3–5 force-delete every LB, target group, and ENI before Terraform runs, so `terraform destroy` completes cleanly in one shot.
 
 ---
 
