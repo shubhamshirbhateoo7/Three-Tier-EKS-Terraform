@@ -503,10 +503,10 @@ Once `EXTERNAL-IP` is populated:
 ```bash
 ARGOCD_URL=$(kubectl get svc argocd-server -n argocd \
   -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
-echo "ArgoCD URL: http://${ARGOCD_URL}"
+echo "ArgoCD URL: https://${ARGOCD_URL}"
 ```
 
-Open `http://<ARGOCD_URL>` in your browser.
+Open `https://<ARGOCD_URL>` in your browser. ArgoCD redirects all HTTP traffic to HTTPS and uses a self-signed certificate — your browser will show a certificate warning. Click **Advanced → Proceed anyway** to continue.
 
 Credentials:
 - Username: `admin`
