@@ -8,7 +8,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL:        https://github.com/Abhiram-Rakesh/Three-Tier-EKS-Terraform.git
+    repoURL:        https://github.com/<YOUR_USERNAME>/Three-Tier-EKS-Terraform.git
     targetRevision: main
     path:           k8s_manifests
     directory:
