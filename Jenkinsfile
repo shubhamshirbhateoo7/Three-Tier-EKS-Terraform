@@ -203,8 +203,8 @@ pipeline {
 
             git commit -m "CI: Update image tags to build-${BUILD_NUMBER} [skip ci]"
 
-            git remote set-url origin "https://${GIT_USER}:${GIT_PASS}@github.com/Abhiram-Rakesh/Three-Tier-EKS-Terraform.git"
-            git push origin HEAD:main
+            git remote set-url origin "https://github.com/Abhiram-Rakesh/Three-Tier-EKS-Terraform.git"
+            git -c "credential.helper=!f() { echo username=\${GIT_USER}; echo password=\${GIT_PASS}; }; f" push origin HEAD:main
 
             echo "Deployment files updated. ArgoCD will sync within 3 minutes."
           """
