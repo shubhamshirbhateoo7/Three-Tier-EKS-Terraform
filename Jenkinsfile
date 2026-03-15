@@ -112,10 +112,6 @@ pipeline {
           string(credentialsId: 'aws-secret-key',  variable: 'AWS_SECRET_ACCESS_KEY')
         ]) {
           sh """
-            aws configure set aws_access_key_id     ${AWS_ACCESS_KEY_ID}
-            aws configure set aws_secret_access_key ${AWS_SECRET_ACCESS_KEY}
-            aws configure set default.region        ${AWS_REGION}
-
             echo "Authenticating with ECR..."
             aws ecr get-login-password --region ${AWS_REGION} \
               | docker login \
@@ -148,10 +144,6 @@ pipeline {
           string(credentialsId: 'aws-secret-key',  variable: 'AWS_SECRET_ACCESS_KEY')
         ]) {
           sh """
-            aws configure set aws_access_key_id     ${AWS_ACCESS_KEY_ID}
-            aws configure set aws_secret_access_key ${AWS_SECRET_ACCESS_KEY}
-            aws configure set default.region        ${AWS_REGION}
-
             echo "Scanning frontend image..."
             trivy image \
               --exit-code 0 \
