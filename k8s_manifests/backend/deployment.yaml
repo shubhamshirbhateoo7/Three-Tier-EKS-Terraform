@@ -29,7 +29,7 @@ spec:
         runAsGroup:   1000
       containers:
         - name: backend
-          image: <YOUR_AWS_ACCOUNT_ID>.dkr.ecr.ap-south-1.amazonaws.com/hm-backend:latest
+          image: 288761770942.dkr.ecr.ap-south-1.amazonaws.com/hm-backend:latest
           ports:
             - containerPort: 5000
           env:
